@@ -22,6 +22,8 @@ const App = () => {
 
     const Local_storage_key = "contacts";
     const [contacts, setContacts] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchResults, setSearchResults] = useState([])
 
     //RetrieveContacts
     const retriveContact = async () => {
@@ -68,6 +70,21 @@ const App = () => {
       setContacts(newContactList)
     }
 
+   const searchHandler = (searchTerm) => {
+          setSearchTerm(searchTerm);
+          if(searchTerm !== ""){
+            const newContactList = contacts.filter((contact) => {
+              return Object.values(contact)
+              .join(" ")
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
+            })
+            setSearchResults(newContactList)
+          }else{
+            setSearchResults(contacts)
+          }
+   }
+
     useEffect(() => {
 
       const getAllContact = async () => {
@@ -91,15 +108,14 @@ const App = () => {
 
         <Route path = "/"
         exact render = {
-          (props) => ( < ContactList {
-              ...props
-            }
-            contacts = {
-              contacts
-            }
+          (props) => ( < ContactList 
+            {...props}
+            contacts = {searchTerm.length < 1 ? contacts : searchResults}
             getContactId = {
               removeContactHandler
             }
+            term={searchTerm}
+            searchKeyword={searchHandler}
             />)}  />
 
             < Route path = "/add"
